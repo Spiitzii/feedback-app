@@ -53,20 +53,20 @@ describe('Feedback Controller', () => {
             text: 'Test text'
         };
 
-        pool.query.mockResolvedValue({ rows: [mockFeedback] });
+        pool.query.mockResolvedValue({ rows: [mockFeedback], rowCount: 1 }); // mock für erfolgreiches Löschen
 
         const result = await deleteFeedbackByTitle('Test Feedback');
 
-        expect(result).toEqual(mockFeedback);
+        expect(result.rowCount).toBe(1); // Überprüfe, dass ein Eintrag gelöscht wurde
         expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', ['Test Feedback']);
     });
 
     it('sollte einen Fehler zurückgeben, wenn das Feedback nicht gefunden wird', async () => {
-        pool.query.mockResolvedValue({ rows: [] });
+        pool.query.mockResolvedValue({ rows: [], rowCount: 0 }); // mock für kein gefundenes Feedback
 
         const result = await deleteFeedbackByTitle('Nonexistent Feedback');
 
-        expect(result).toBeNull();
+        expect(result.rowCount).toBe(0); // Überprüfe, dass kein Eintrag gelöscht wurde
         expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', ['Nonexistent Feedback']);
     });
 });

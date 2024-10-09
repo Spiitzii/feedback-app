@@ -1,5 +1,3 @@
-// Datei: feedback-app/__tests__/errorHandler.test.js
-
 import { errorHandler } from '../src/middleware/errorHandler'; 
 import httpMocks from 'node-mocks-http';
 
@@ -17,7 +15,7 @@ describe('Error Handler Middleware', () => {
         expect(res.statusCode).toBe(400);
         expect(res._getJSONData()).toEqual({
             success: false,
-            message: 'Testfehler',
+            message: 'Testfehler', // Verwende 'message' anstelle von 'error'
         });
     });
 
@@ -33,7 +31,7 @@ describe('Error Handler Middleware', () => {
         expect(res.statusCode).toBe(500);
         expect(res._getJSONData()).toEqual({
             success: false,
-            message: 'Interner Serverfehler',
+            message: 'Interner Serverfehler', // Verwende 'message' anstelle von 'error'
         });
     });
 });

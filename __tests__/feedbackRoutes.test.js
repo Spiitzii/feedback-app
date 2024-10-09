@@ -49,6 +49,7 @@ describe('Feedback Routes', () => {
         const response = await request(app).get('/feedback');
 
         expect(response.status).toBe(200);
+        expect(response.body.message).toBe("Feedback erfolgreich abgefragt.");
         expect(response.body.data).toEqual(mockFeedbacks);
     });
 
@@ -59,17 +60,17 @@ describe('Feedback Routes', () => {
             text: 'Test text'
         };
 
-        deleteFeedbackByTitle.mockResolvedValue(mockFeedback);
+        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 1 }); // Simuliere, dass das Feedback erfolgreich gelöscht wurde
 
         const response = await request(app).delete('/feedback/Test Feedback');
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe("Feedback erfolgreich gelöscht."); // Überprüfe den korrekten Text
-        expect(response.body.data).toEqual(mockFeedback);
+        expect(response.body.message).toBe("Feedback erfolgreich gelöscht."); // Überprüfe den Text
+        expect(response.body.data).toBeNull(); // Die Daten sind null beim Löschen
     });
 
     it('DELETE /feedback/:title - sollte 404 zurückgeben, wenn das Feedback nicht gefunden wird', async () => {
-        deleteFeedbackByTitle.mockResolvedValue(null);
+        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 0 }); // Simuliere, dass das Feedback nicht gefunden wurde
 
         const response = await request(app).delete('/feedback/NonexistentFeedback');
 

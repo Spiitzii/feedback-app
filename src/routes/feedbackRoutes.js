@@ -41,7 +41,7 @@ feedbackRouter.delete('/feedback/:title', async (req, res) => {
         if (result.rowCount === 0) {
             return sendError(res, "Feedback nicht gefunden.", 404);
         }
-        sendSuccess(res, null, "Feedback erfolgreich geloescht.");
+        sendSuccess(res, null, "Feedback erfolgreich gelöscht.");
     } catch (error) {
         sendError(res, "Fehler beim Loeschen des Feedbacks.");
     }
