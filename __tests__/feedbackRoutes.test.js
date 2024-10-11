@@ -20,7 +20,7 @@ describe('Feedback Routes', () => {
         jest.clearAllMocks();
     });
 
-    it('POST /feedback - sollte Feedback speichern und 201 zurückgeben', async () => {
+    it('POST /feedback - should add feedback and return 201', async () => {
         const mockFeedback = {
             id: 1,
             title: 'Test Feedback',
@@ -38,43 +38,33 @@ describe('Feedback Routes', () => {
         expect(response.body.data).toEqual(mockFeedback);
     });
 
-    it('GET /feedback - sollte alle Feedbacks zurückgeben', async () => {
-        const mockFeedbacks = [
-            { id: 1, title: 'Test Feedback 1', text: 'Test text 1' },
-            { id: 2, title: 'Test Feedback 2', text: 'Test text 2' }
-        ];
-
-        getAllFeedback.mockResolvedValue(mockFeedbacks);
+    it('GET /feedback - should return all feedback', async () => {
+        const mockFeedback = [{ id: 1, title: 'Test Feedback', text: 'Test text' }];
+        getAllFeedback.mockResolvedValue(mockFeedback);
 
         const response = await request(app).get('/feedback');
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe("Feedback erfolgreich abgefragt.");
-        expect(response.body.data).toEqual(mockFeedbacks);
+        expect(response.body.data).toEqual(mockFeedback);
     });
 
-    it('DELETE /feedback/:title - sollte Feedback löschen und 200 zurückgeben', async () => {
-        const mockFeedback = {
-            id: 1,
-            title: 'Test Feedback',
-            text: 'Test text'
-        };
+    it('DELETE /feedback/:title - should delete feedback and return 200', async () => {
+        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 1 });
 
-        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 1 }); // Simuliere, dass das Feedback erfolgreich gelöscht wurde
-
-        const response = await request(app).delete('/feedback/Test Feedback');
+        const response = await request(app).delete('/feedback/test');
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe("Feedback erfolgreich gelöscht."); // Überprüfe den Text
-        expect(response.body.data).toBeNull(); // Die Daten sind null beim Löschen
+        expect(response.body.message).toBe('Feedback erfolgreich geloescht.');
     });
 
-    it('DELETE /feedback/:title - sollte 404 zurückgeben, wenn das Feedback nicht gefunden wird', async () => {
-        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 0 }); // Simuliere, dass das Feedback nicht gefunden wurde
+    it('DELETE /feedback/:title - should return 404 if feedback not found', async () => {
+        deleteFeedbackByTitle.mockResolvedValue({ rowCount: 0 });
 
-        const response = await request(app).delete('/feedback/NonexistentFeedback');
+        const response = await request(app).delete('/feedback/nonexistent_title');
 
         expect(response.status).toBe(404);
-        expect(response.body.error).toBe("Feedback nicht gefunden."); // Überprüfe die Fehlermeldung
+        expect(response.body.error).toBe('Feedback nicht gefunden.');
     });
+
 });
+

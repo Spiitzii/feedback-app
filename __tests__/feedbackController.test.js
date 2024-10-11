@@ -14,7 +14,7 @@ describe('Feedback Controller', () => {
         jest.clearAllMocks();
     });
 
-    it('Feedback sollte erfolgreich gespeichert werden', async () => {
+    it('should add feedback successfully', async () => {
         const mockFeedback = {
             id: 1,
             title: 'Test Feedback',
@@ -30,43 +30,40 @@ describe('Feedback Controller', () => {
             'INSERT INTO feedback (title, text) VALUES ($1, $2) RETURNING *;', 
             ['Test Feedback', 'Test text']
         );
+
     });
 
-    it('sollte alle Feedbacks abrufen', async () => {
-        const mockFeedbacks = [
-            { id: 1, title: 'Test Feedback 1', text: 'Test text 1' },
-            { id: 2, title: 'Test Feedback 2', text: 'Test text 2' }
-        ];
-
-        pool.query.mockResolvedValue({ rows: mockFeedbacks });
+    it('should get all feedback successfully', async () => {
+        const mockFeedback = [{ id: 1, title: 'Test Feedback', text: 'Test text' }];
+        pool.query.mockResolvedValue({ rows: mockFeedback });
 
         const result = await getAllFeedback();
 
-        expect(result).toEqual(mockFeedbacks);
+        expect(result).toEqual(mockFeedback);
         expect(pool.query).toHaveBeenCalledWith('SELECT * FROM feedback;');
     });
 
-    it('sollte Feedback anhand des Titels löschen', async () => {
-        const mockFeedback = {
-            id: 1,
-            title: 'Test Feedback',
-            text: 'Test text'
-        };
+    it('should delete feedback by title', async () => {
+        const mockResponse = { rowCount: 1 };
+        const title = 'Test Feedback';
 
-        pool.query.mockResolvedValue({ rows: [mockFeedback], rowCount: 1 }); // mock für erfolgreiches Löschen
+        pool.query.mockResolvedValue(mockResponse);
 
-        const result = await deleteFeedbackByTitle('Test Feedback');
+        const result = await deleteFeedbackByTitle(title);
 
-        expect(result.rowCount).toBe(1); // Überprüfe, dass ein Eintrag gelöscht wurde
-        expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', ['Test Feedback']);
+        expect(result).toEqual(mockResponse);
+        expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', [title]);
     });
 
-    it('sollte einen Fehler zurückgeben, wenn das Feedback nicht gefunden wird', async () => {
-        pool.query.mockResolvedValue({ rows: [], rowCount: 0 }); // mock für kein gefundenes Feedback
+    it('should handle delete feedback not found', async () => {
+        const mockResponse = { rowCount: 0 };
+        const title = '_nonexistent_title_'
 
-        const result = await deleteFeedbackByTitle('Nonexistent Feedback');
+        pool.query.mockResolvedValue(mockResponse);
 
-        expect(result.rowCount).toBe(0); // Überprüfe, dass kein Eintrag gelöscht wurde
-        expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', ['Nonexistent Feedback']);
+        const result = await deleteFeedbackByTitle(title);
+
+        expect(result.rowCount).toBe(0);
+        expect(pool.query).toHaveBeenCalledWith('DELETE FROM feedback WHERE title = $1 RETURNING *;', [title]);
     });
 });

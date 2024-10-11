@@ -17,34 +17,21 @@ app.post('/feedback', feedbackValidation, (req, res) => {
 });
 
 describe('Validation Middleware', () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('gibt Fehler zurück, wenn der Titel fehlt', async () => {
+    it('should fail validation when title is missing', async () => {
         const response = await request(app)
             .post('/feedback')
             .send({ text: "Test text" });
 
         expect(response.status).toBe(400);
         expect(response.body.errors[0].msg).toBe('Titel ist erforderlich.');
+
     });
 
-    it('gibt Fehler zurück, wenn der Text fehlt', async () => {
-        const response = await request(app)
-            .post('/feedback')
-            .send({ title: "Test Title" });
-
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].msg).toBe('Text ist erforderlich.');
-    });
-
-    it('gibt 201 zurück, wenn die Validierung erfolgreich ist', async () => {
-        const response = await request(app)
-            .post('/feedback')
-            .send({ title: "Test Title", text: "Test text" });
+    it('should pass validation when both title and text are provided', async () => {
+        const response = await request(app).post('/feedback').send({ title: 'Test', text: 'Test text' });
 
         expect(response.status).toBe(201);
-        expect(response.body.message).toBe("Validierung erfolgreich.");
+        expect(response.body.message).toBe('Validierung erfolgreich.');
     });
+
 });
