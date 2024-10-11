@@ -43,7 +43,7 @@ feedbackRouter.delete('/feedback/:title', async (req, res) => {
         }
         sendSuccess(res, null, "Feedback erfolgreich gelöscht.");
     } catch (error) {
-        sendError(res, "Fehler beim Loeschen des Feedbacks.");
+        sendError(res, "Fehler beim Löschen des Feedbacks.");
     }
 });
 

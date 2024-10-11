@@ -77,7 +77,7 @@ describe('Feedback Routes', () => {
         const response = await request(app).delete('/feedback/test');
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Feedback erfolgreich geloescht.');
+        expect(response.body.message).toBe('Feedback erfolgreich gelöscht.');
     });
 
     // Test für Fehler beim Löschen von Feedback (Zeile 46)
